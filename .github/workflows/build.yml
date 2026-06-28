@@ -1,0 +1,29 @@
+name: Build
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore PowerBI-Cleanup-Tool.sln
+
+      - name: Build
+        run: dotnet build PowerBI-Cleanup-Tool.sln --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test PowerBI-Cleanup-Tool.sln --configuration Release --no-build
