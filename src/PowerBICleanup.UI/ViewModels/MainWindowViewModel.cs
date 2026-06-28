@@ -1,41 +1,42 @@
-using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
-using PowerBICleanup.Engine.Readers;
+using PowerBICleanup.Engine.Services;
 using PowerBICleanup.UI.Commands;
 
 namespace PowerBICleanup.UI.ViewModels;
 
 public sealed class MainWindowViewModel
 {
+    private readonly ProjectService _projectService = new();
+
     public ICommand OpenProjectCommand { get; }
 
     public MainWindowViewModel()
     {
-        OpenProjectCommand =
-            new RelayCommand(OpenProject);
+        OpenProjectCommand = new RelayCommand(OpenProject);
     }
 
     private void OpenProject()
     {
-        using var dialog = new FolderBrowserDialog();
-
-        dialog.Description = "Select a PBIP project";
+        using var dialog = new FolderBrowserDialog
+        {
+            Description = "Select a PBIP project"
+        };
 
         if (dialog.ShowDialog() != DialogResult.OK)
             return;
 
-        var reader = new PbipReader();
+        var project = _projectService.LoadProject(dialog.SelectedPath);
 
-        if (reader.IsPbipProject(dialog.SelectedPath))
+        if (project is not null)
         {
-            MessageBox.Show(
-                "PBIP project detected.",
+            System.Windows.MessageBox.Show(
+                $"PBIP project detected: {project.Name}",
                 "PBI ModelLens");
         }
         else
         {
-            MessageBox.Show(
+            System.Windows.MessageBox.Show(
                 "This folder is not a PBIP project.",
                 "PBI ModelLens");
         }
