@@ -31,7 +31,9 @@ public sealed class MainWindowViewModel
         if (project is not null)
         {
             System.Windows.MessageBox.Show(
-                $"PBIP project detected: {project.Name}",
+                $"PBIP project detected.\n\n" +
+                $"Report: {project.ReportFolder ?? "Not found"}\n" +
+                $"Semantic model: {project.SemanticModelFolder ?? "Not found"}",
                 "PBI ModelLens");
         }
         else
