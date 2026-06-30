@@ -35,15 +35,18 @@ public sealed class MainWindowViewModel
             Name = CurrentProject.Name
         };
 
-        projectItem.Children.Add(new ExplorerItem
+        var reportItem = new ExplorerItem
         {
-            Name = "Report"
-        });
+            Name = CurrentProject.Report?.Name ?? "Report"
+        };
 
-        projectItem.Children.Add(new ExplorerItem
+        var semanticModelItem = new ExplorerItem
         {
             Name = "Semantic Model"
-        });
+        };
+
+        projectItem.Children.Add(reportItem);
+        projectItem.Children.Add(semanticModelItem);
 
         ExplorerItems.Add(projectItem);
     }
