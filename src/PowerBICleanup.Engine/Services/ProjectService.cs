@@ -27,10 +27,12 @@ public sealed class ProjectService
             Name = project.Name,
             RootFolder = project.RootFolder,
             PbipFile = project.PbipFile,
-            ReportFolder = metadata.ReportFolder is null
+
+            ReportFolderPath = metadata.ReportFolder is null
                 ? null
                 : Path.Combine(project.RootFolder, metadata.ReportFolder),
-            SemanticModelFolder = metadata.SemanticModelFolder is null
+
+            SemanticModelFolderPath = metadata.SemanticModelFolder is null
                 ? null
                 : Path.Combine(project.RootFolder, metadata.SemanticModelFolder)
         };

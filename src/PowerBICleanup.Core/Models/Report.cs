@@ -4,5 +4,5 @@ public sealed class Report
 {
     public required string Name { get; init; }
 
-    public IList<ReportPage> Pages { get; } = new List<ReportPage>();
+    public required string FolderPath { get; init; }
 }
