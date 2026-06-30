@@ -298,3 +298,163 @@ Choose the simplest solution that can evolve.
 The owl represents observation, understanding and insight.
 
 It reminds us that ModelLens exists to understand a model before changing it.
+
+## Milestones
+
+### v0.1
+- Solution structure
+- MVVM
+- Open PBIP folder
+- Read .pbip
+
+### Current Focus
+- Build Explorer UI
+---
+
+# Latest Milestone
+
+## Milestone 1 Completed
+
+The project now builds successfully from a clean `main` branch.
+
+Implemented:
+
+* Solution foundation
+* MVVM foundation
+* Open PBIP folder flow
+* PBIP project detection
+* Reading `.pbip` metadata
+* Basic `ModelLensProject` domain model
+* Initial project service orchestration
+
+Current flow:
+
+```text
+UI
+ ↓
+MainWindowViewModel
+ ↓
+ProjectService
+ ↓
+IProjectReader / PbipProjectReader
+ ↓
+PbipFileReader
+ ↓
+ModelLensProject
+```
+
+The application currently uses a folder picker.
+The user must select the folder that contains the `.pbip` file, not the `.pbip` file itself.
+
+Current limitation:
+
+* No Explorer UI yet
+* No report pages loaded yet
+* No semantic model loaded yet
+* MessageBox is still used for temporary feedback
+
+---
+
+# Next Focus
+
+## Milestone 2 – Explorer Foundation
+
+Goal:
+
+Turn the application from a simple MessageBox prototype into the first real ModelLens UI.
+
+Planned steps:
+
+1. Replace the basic button with an application shell.
+2. Add a menu item: `File > Open PBIP Folder...`
+3. Add left-side Explorer panel.
+4. Add right-side Details panel.
+5. Add bottom StatusBar.
+6. Store the loaded project in `CurrentProject`.
+7. Add an `ExplorerItem` UI model.
+8. Bind a `TreeView` to an `ObservableCollection<ExplorerItem>`.
+9. Populate root Explorer nodes:
+
+```text
+Project
+ ├── Report
+ └── Semantic Model
+```
+
+Pages and visuals are not part of this milestone.
+
+---
+
+# Suggested Folder Direction
+
+Keep domain models in:
+
+```text
+src/PowerBICleanup.Core/Models
+```
+
+Examples:
+
+* ModelLensProject
+* Report
+* ReportPage
+
+Keep UI-specific models in the UI project, for example:
+
+```text
+src/PowerBICleanup.UI/Explorer
+```
+
+Examples:
+
+* ExplorerItem
+
+Keep readers organized by responsibility:
+
+```text
+Readers
+ ├── Projects
+ ├── Pbip
+ ├── Reports
+ └── SemanticModel
+```
+
+Folder reorganization is allowed, but keep namespaces clean and the build green after each move.
+
+---
+
+# Working Rules
+
+* Keep `main` clean.
+* One issue = one branch.
+* One feature = one pull request.
+* Keep every commit buildable.
+* Do not introduce Dependency Injection yet.
+* Do not introduce large frameworks yet.
+* Prefer simple, readable C#.
+* Grow the domain model one level at a time.
+* Avoid reading visuals before report pages are working.
+* Avoid dependency analysis until report and semantic model objects exist.
+
+---
+
+# Immediate Next Step
+
+Create a new branch for Milestone 2:
+
+```bash
+git checkout -b feature/explorer-foundation
+```
+
+Then implement the application shell first:
+
+```text
+Menu
+Explorer panel
+Details panel
+Status bar
+```
+
+Do not read pages yet.
+
+The goal of the next step is only to make the app feel like a real desktop application.
