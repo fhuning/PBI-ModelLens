@@ -23,7 +23,7 @@ public sealed class PbipPageReaderTests
 
             File.WriteAllText(Path.Combine(pageFolder, "page.json"), pageJson);
 
-            var reader = new PbipPageReader();
+            var reader = new PageReader();
 
             var pages = reader.ReadPages(rootFolder);
 

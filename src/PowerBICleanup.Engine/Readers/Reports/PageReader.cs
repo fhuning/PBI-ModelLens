@@ -3,7 +3,7 @@ using PowerBICleanup.Core.Models;
 
 namespace PowerBICleanup.Engine.Readers;
 
-public sealed class PbipPageReader
+public sealed class PageReader
 {
     public IReadOnlyList<PbipPage> ReadPages(string pbipRootFolder)
     {

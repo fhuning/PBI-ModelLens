@@ -6,7 +6,7 @@ public sealed class ModelLensProject
     public required string RootFolder { get; init; }
     public required string PbipFile { get; init; }
 
-    public string? ReportFolder { get; init; }
-    public string? SemanticModelFolder { get; init; }
+    public string? ReportFolderPath { get; init; }
+    public string? SemanticModelFolderPath { get; init; }
     public Report? Report { get; init; }
 }
