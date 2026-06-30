@@ -2,6 +2,9 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using PowerBICleanup.Engine.Services;
 using PowerBICleanup.UI.Commands;
+using System.Collections.ObjectModel;
+using PowerBICleanup.Core.Models;
+using PowerBICleanup.UI.Explorer;
 
 namespace PowerBICleanup.UI.ViewModels;
 
@@ -11,36 +14,60 @@ public sealed class MainWindowViewModel
 
     public ICommand OpenProjectCommand { get; }
 
+    public ModelLensProject? CurrentProject { get; private set; }
+
+    public ObservableCollection<ExplorerItem> ExplorerItems { get; } = new();
+
     public MainWindowViewModel()
     {
         OpenProjectCommand = new RelayCommand(OpenProject);
     }
 
+    private void PopulateExplorer()
+    {
+        ExplorerItems.Clear();
+
+        if (CurrentProject is null)
+            return;
+
+        var projectItem = new ExplorerItem
+        {
+            Name = CurrentProject.Name
+        };
+
+        projectItem.Children.Add(new ExplorerItem
+        {
+            Name = "Report"
+        });
+
+        projectItem.Children.Add(new ExplorerItem
+        {
+            Name = "Semantic Model"
+        });
+
+        ExplorerItems.Add(projectItem);
+    }
     private void OpenProject()
     {
-        using var dialog = new FolderBrowserDialog
-        {
-            Description = "Select a PBIP project"
-        };
+        using var dialog = new FolderBrowserDialog();
+
+        dialog.Description = "Select a PBIP project";
 
         if (dialog.ShowDialog() != DialogResult.OK)
             return;
 
         var project = _projectService.LoadProject(dialog.SelectedPath);
 
-        if (project is not null)
-        {
-            System.Windows.MessageBox.Show(
-                $"PBIP project detected.\n\n" +
-                $"Report: {project.ReportFolder ?? "Not found"}\n" +
-                $"Semantic model: {project.SemanticModelFolder ?? "Not found"}",
-                "PBI ModelLens");
-        }
-        else
+        if (project is null)
         {
             System.Windows.MessageBox.Show(
                 "This folder is not a PBIP project.",
                 "PBI ModelLens");
+
+            return;
         }
+
+        CurrentProject = project;
+        PopulateExplorer();
     }
 }

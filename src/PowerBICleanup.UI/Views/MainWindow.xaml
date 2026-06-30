@@ -39,22 +39,24 @@
             </Grid.ColumnDefinitions>
 
             <!-- Explorer -->
-            <Border Grid.Column="0"
-                    BorderBrush="LightGray"
-                    BorderThickness="0,0,1,0">
+            <DockPanel>
 
-                <DockPanel>
+                <TextBlock DockPanel.Dock="Top"
+                        Margin="10"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Text="Explorer" />
 
-                    <TextBlock DockPanel.Dock="Top"
-                               Margin="10"
-                               FontSize="14"
-                               FontWeight="Bold"
-                               Text="Explorer" />
+                <TreeView Margin="5"
+                        ItemsSource="{Binding ExplorerItems}">
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                            <TextBlock Text="{Binding Name}" />
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
 
-                </DockPanel>
-
-            </Border>
-
+            </DockPanel>
             <!-- Grid splitter -->
             <GridSplitter Grid.Column="1"
                           Width="5"
