@@ -1,4 +1,3 @@
-using System.Windows.Forms;
 using System.Windows.Input;
 using PowerBICleanup.Engine.Services;
 using PowerBICleanup.UI.Commands;
@@ -44,6 +43,19 @@ public sealed class MainWindowViewModel
             Tag = CurrentProject.Report
         };
 
+        if (CurrentProject.Report is not null)
+        {
+            foreach (var page in CurrentProject.Report.Pages)
+            {
+                reportItem.Children.Add(new ExplorerItem
+                {
+                    Name = page.Name,
+                    ItemType = ExplorerItemType.ReportPage,
+                    Tag = page
+                });
+            }
+        }
+
         var semanticModelItem = new ExplorerItem
         {
             Name = "Semantic Model",
@@ -74,7 +86,6 @@ public sealed class MainWindowViewModel
 
             return;
         }
-
         CurrentProject = project;
         PopulateExplorer();
     }
