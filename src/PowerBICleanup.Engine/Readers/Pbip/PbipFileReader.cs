@@ -14,8 +14,8 @@ public sealed class PbipFileReader
 
         var root = document.RootElement;
 
-        var reportFolder = TryGetPath(root, "report");
-        var semanticModelFolder = TryGetPath(root, "semanticModel");
+        var reportFolder = TryGetArtifactPath(root, "report");
+        var semanticModelFolder = TryGetArtifactPath(root, "semanticModel");
 
         return new PbipMetadata
         {
@@ -24,14 +24,24 @@ public sealed class PbipFileReader
         };
     }
 
-    private static string? TryGetPath(JsonElement root, string propertyName)
+    private static string? TryGetArtifactPath(
+        JsonElement root,
+        string artifactName)
     {
-        if (!root.TryGetProperty(propertyName, out var element))
+        if (!root.TryGetProperty("artifacts", out var artifactsElement))
             return null;
 
-        if (!element.TryGetProperty("path", out var pathElement))
-            return null;
+        foreach (var artifact in artifactsElement.EnumerateArray())
+        {
+            if (!artifact.TryGetProperty(artifactName, out var artifactElement))
+                continue;
 
-        return pathElement.GetString();
+            if (!artifactElement.TryGetProperty("path", out var pathElement))
+                return null;
+
+            return pathElement.GetString();
+        }
+
+        return null;
     }
 }

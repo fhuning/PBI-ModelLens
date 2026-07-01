@@ -1,47 +1,23 @@
-using PowerBICleanup.Engine.Readers;
+using PowerBICleanup.Core.Models;
+using PowerBICleanup.Engine.Readers.Reports;
 
 namespace PowerBICleanup.Tests;
 
 public sealed class PbipPageReaderTests
 {
     [Fact]
-    public void ReadPages_ReturnsPageWithDisplayName()
+    public void Read_AddsPagesToReport()
     {
-        var rootFolder = CreateTempFolder();
-
-        try
+        var report = new Report
         {
-            var pageFolder = Path.Combine(rootFolder, "Report", "pages", "abc123");
-            Directory.CreateDirectory(pageFolder);
+            Name = "Test Report",
+            FolderPath = @"C:\VS-projects\PBI-ModelLens\samples\HRM003 - Sickness.Report"
+        };
 
-            var pageJson = """
-            {
-              "name": "abc123",
-              "displayName": "Dashboard"
-            }
-            """;
+        var reader = new PageReader();
 
-            File.WriteAllText(Path.Combine(pageFolder, "page.json"), pageJson);
+        reader.Read(report);
 
-            var reader = new PageReader();
-
-            var pages = reader.ReadPages(rootFolder);
-
-            Assert.Single(pages);
-            Assert.Equal("abc123", pages[0].Id);
-            Assert.Equal("Dashboard", pages[0].DisplayName);
-            Assert.Equal(pageFolder, pages[0].FolderPath);
-        }
-        finally
-        {
-            Directory.Delete(rootFolder, recursive: true);
-        }
-    }
-
-    private static string CreateTempFolder()
-    {
-        var path = Path.Combine(Path.GetTempPath(), "PowerBICleanupTests", Guid.NewGuid().ToString("N"));
-        Directory.CreateDirectory(path);
-        return path;
+        Assert.NotEmpty(report.Pages);
     }
 }

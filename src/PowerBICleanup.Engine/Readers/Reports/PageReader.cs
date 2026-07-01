@@ -1,52 +1,74 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using PowerBICleanup.Core.Models;
 
-namespace PowerBICleanup.Engine.Readers;
+namespace PowerBICleanup.Engine.Readers.Reports;
 
 public sealed class PageReader
 {
-    public IReadOnlyList<PbipPage> ReadPages(string pbipRootFolder)
+    public void Read(Report report)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(pbipRootFolder);
+        var pagesFolder = Path.Combine(
+            report.FolderPath,
+            "definition",
+            "pages");
 
-        if (!Directory.Exists(pbipRootFolder))
+        if (!Directory.Exists(pagesFolder))
+            return;
+
+        foreach (var pageId in ReadPageOrder(pagesFolder))
         {
-            throw new DirectoryNotFoundException(pbipRootFolder);
-        }
+            var pageFolder = Path.Combine(pagesFolder, pageId);
+            var pageJsonFile = Path.Combine(pageFolder, "page.json");
 
-        var pageFiles = Directory
-            .GetFiles(pbipRootFolder, "page.json", SearchOption.AllDirectories)
-            .OrderBy(file => file)
-            .ToList();
+            if (!File.Exists(pageJsonFile))
+                continue;
 
-        var pages = new List<PbipPage>();
+            var json = File.ReadAllText(pageJsonFile);
+            var pageDefinition = JsonSerializer.Deserialize<PageDefinition>(json);
 
-        foreach (var pageFile in pageFiles)
-        {
-            using var document = JsonDocument.Parse(File.ReadAllText(pageFile));
-            var root = document.RootElement;
+            if (pageDefinition is null)
+                continue;
 
-            var folder = Path.GetDirectoryName(pageFile) ?? "";
-            var id = Path.GetFileName(folder);
-
-            pages.Add(new PbipPage
+            report.Pages.Add(new ReportPage
             {
-                Id = id,
-                DisplayName = GetOptionalString(root, "displayName")
-                    ?? GetOptionalString(root, "name")
-                    ?? id,
-                FolderPath = folder
+                PageId = pageDefinition.Name,
+                Name = pageDefinition.DisplayName,
+                FolderPath = pageFolder
             });
         }
-
-        return pages;
     }
 
-    private static string? GetOptionalString(JsonElement element, string propertyName)
+    private static IReadOnlyList<string> ReadPageOrder(string pagesFolder)
     {
-        return element.TryGetProperty(propertyName, out var property)
-            && property.ValueKind == JsonValueKind.String
-                ? property.GetString()
-                : null;
+        var pagesJsonFile = Path.Combine(pagesFolder, "pages.json");
+
+        if (!File.Exists(pagesJsonFile))
+            return Directory
+                .EnumerateDirectories(pagesFolder)
+                .Select(Path.GetFileName)
+                .Where(name => !string.IsNullOrWhiteSpace(name))
+                .Cast<string>()
+                .ToList();
+
+        var json = File.ReadAllText(pagesJsonFile);
+        var metadata = JsonSerializer.Deserialize<PagesMetadata>(json);
+
+        return metadata?.PageOrder ?? [];
+    }
+
+    private sealed class PagesMetadata
+    {
+        [JsonPropertyName("pageOrder")]
+        public List<string> PageOrder { get; init; } = [];
+    }
+
+    private sealed class PageDefinition
+    {
+        [JsonPropertyName("name")]
+        public required string Name { get; init; }
+
+        [JsonPropertyName("displayName")]
+        public required string DisplayName { get; init; }
     }
 }

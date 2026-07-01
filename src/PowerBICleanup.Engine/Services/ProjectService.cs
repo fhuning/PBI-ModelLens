@@ -9,12 +9,14 @@ public sealed class ProjectService
     private readonly IProjectReader _projectReader;
     private readonly PbipFileReader _pbipFileReader;
     private readonly ReportReader _reportReader;
+    private readonly PageReader _pageReader;
 
     public ProjectService()
     {
         _projectReader = new PbipProjectReader();
         _pbipFileReader = new PbipFileReader();
         _reportReader = new ReportReader();
+        _pageReader = new PageReader();
     }
 
     public ModelLensProject? LoadProject(string folder)
@@ -36,16 +38,21 @@ public sealed class ProjectService
                 ? null
                 : Path.Combine(project.RootFolder, metadata.SemanticModelFolder);
 
+        var report = _reportReader.Read(reportFolderPath);
+
+        if (report is not null)
+        {
+            _pageReader.Read(report);
+        }
+
         return new ModelLensProject
         {
             Name = project.Name,
             RootFolder = project.RootFolder,
             PbipFile = project.PbipFile,
-
             ReportFolderPath = reportFolderPath,
             SemanticModelFolderPath = semanticModelFolderPath,
-
-            Report = _reportReader.Read(reportFolderPath)
+            Report = report
         };
     }
 }
