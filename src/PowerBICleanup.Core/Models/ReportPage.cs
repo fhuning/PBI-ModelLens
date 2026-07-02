@@ -7,4 +7,6 @@ public sealed class ReportPage
     public required string Name { get; init; }
 
     public required string FolderPath { get; init; }
+
+    public List<Visual> Visuals { get; } = [];
 }
