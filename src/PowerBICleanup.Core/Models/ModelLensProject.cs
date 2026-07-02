@@ -8,5 +8,6 @@ public sealed class ModelLensProject
 
     public string? ReportFolderPath { get; init; }
     public string? SemanticModelFolderPath { get; init; }
+    public SemanticModel? SemanticModel { get; init; }
     public Report? Report { get; init; }
 }
