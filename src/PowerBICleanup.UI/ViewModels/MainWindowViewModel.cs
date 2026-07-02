@@ -4,6 +4,7 @@ using PowerBICleanup.UI.Commands;
 using System.Collections.ObjectModel;
 using PowerBICleanup.Core.Models;
 using PowerBICleanup.UI.Explorer;
+using PowerBICleanup.Core.Models;
 
 namespace PowerBICleanup.UI.ViewModels;
 
@@ -47,12 +48,24 @@ public sealed class MainWindowViewModel
         {
             foreach (var page in CurrentProject.Report.Pages)
             {
-                reportItem.Children.Add(new ExplorerItem
+                var pageItem = new ExplorerItem
                 {
                     Name = page.Name,
                     ItemType = ExplorerItemType.ReportPage,
                     Tag = page
-                });
+                };
+
+                foreach (var visual in page.Visuals)
+                {
+                    pageItem.Children.Add(new ExplorerItem
+                    {
+                        Name = FormatVisualName(visual),
+                        ItemType = ExplorerItemType.Visual,
+                        Tag = visual
+                    });
+                }
+
+                reportItem.Children.Add(pageItem);
             }
         }
 
@@ -87,6 +100,27 @@ public sealed class MainWindowViewModel
             return;
         }
         CurrentProject = project;
+
         PopulateExplorer();
+    }
+    private static string FormatVisualName(Visual visual)
+    {
+        var type = visual.VisualType switch
+        {
+            "cardVisual" => "Card",
+            "pivotTable" => "Matrix",
+            "slicer" => "Slicer",
+            "clusteredColumnChart" => "Column Chart",
+            "lineChart" => "Line Chart",
+            "actionButton" => "Button",
+            "textbox" => "Text Box",
+            "shape" => "Shape",
+            "image" => "Image",
+            _ => visual.VisualType
+        };
+
+        return string.IsNullOrWhiteSpace(visual.Title)
+            ? type
+            : $"{type} - {visual.Title}";
     }
 }

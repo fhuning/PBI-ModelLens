@@ -10,6 +10,7 @@ public sealed class ProjectService
     private readonly PbipFileReader _pbipFileReader;
     private readonly ReportReader _reportReader;
     private readonly PageReader _pageReader;
+    private readonly VisualReader _visualReader;
 
     public ProjectService()
     {
@@ -17,6 +18,7 @@ public sealed class ProjectService
         _pbipFileReader = new PbipFileReader();
         _reportReader = new ReportReader();
         _pageReader = new PageReader();
+        _visualReader = new VisualReader();
     }
 
     public ModelLensProject? LoadProject(string folder)
@@ -43,6 +45,10 @@ public sealed class ProjectService
         if (report is not null)
         {
             _pageReader.Read(report);
+            foreach (var page in report.Pages)
+            {
+                _visualReader.Read(page);
+            }
         }
 
         return new ModelLensProject
