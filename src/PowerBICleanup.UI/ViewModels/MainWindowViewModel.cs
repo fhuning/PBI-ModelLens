@@ -72,9 +72,22 @@ public sealed class MainWindowViewModel
         var semanticModelItem = new ExplorerItem
         {
             Name = "Semantic Model",
-            ItemType = ExplorerItemType.SemanticModel
+            ItemType = ExplorerItemType.SemanticModel,
+            Tag = CurrentProject.SemanticModel
         };
 
+        if (CurrentProject.SemanticModel is not null)
+        {
+            foreach (var table in CurrentProject.SemanticModel.Tables)
+            {
+                semanticModelItem.Children.Add(new ExplorerItem
+                {
+                    Name = table.Name,
+                    ItemType = ExplorerItemType.Table,
+                    Tag = table
+                });
+            }
+        }
         projectItem.Children.Add(reportItem);
         projectItem.Children.Add(semanticModelItem);
 
@@ -103,9 +116,6 @@ public sealed class MainWindowViewModel
 
         var tableCount =
             CurrentProject.SemanticModel?.Tables.Count ?? 0;
-
-        MessageBox.Show(
-            $"Tables: {tableCount}");
 
         PopulateExplorer();
     }

@@ -6,5 +6,6 @@ public enum ExplorerItemType
     Report,
     ReportPage,
     Visual,
-    SemanticModel
+    SemanticModel,
+    Table
 }
