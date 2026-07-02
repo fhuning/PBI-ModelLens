@@ -101,6 +101,12 @@ public sealed class MainWindowViewModel
         }
         CurrentProject = project;
 
+        var tableCount =
+            CurrentProject.SemanticModel?.Tables.Count ?? 0;
+
+        MessageBox.Show(
+            $"Tables: {tableCount}");
+
         PopulateExplorer();
     }
     private static string FormatVisualName(Visual visual)
